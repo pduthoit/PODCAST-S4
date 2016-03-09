@@ -1,6 +1,5 @@
 function init() {
-	loadChapter(); // charge un premier chapitre
-	window.addEventListener("hashchange",loadChapter); // charge un chapitre à chaque fois que l'url change
+	
 }
 
 function getXMLHttpRequest() { // renvoit un objet XMLHttpRequest valide
@@ -21,63 +20,76 @@ function getXMLHttpRequest() { // renvoit un objet XMLHttpRequest valide
 	}
 	return xhr;
 }
-function changeChapter(cptr) { // Lorsque qu'un chapitre est récupéré depuis le serveur, l'affiche.
-	// transformation de la requête en objet
-	var j=JSON.parse(cptr); 
+function createItemData(item) {
+	var out=new Array("title","link","description");
+	var elem=item.children;
+	for(var j=0;j<elemC.length;j++) {
+		e=elemC[j];
+		if(e.tagName==out[0]) // if no title yet
+			out[0]=e.childNodes[0].nodeValue;
+		if(e.tagName==out[1]) // if no link yet
+			out[1]=e.childNodes[0].nodeValue;
+		if(e.tagName==out[2]) // if no description yet
+			out[2]=e.childNodes[0].nodeValue;
+	}
+	return out;
+}
+function getChannelData(rss) { // Lorsque qu'un podcast est récupéré, on l'affiche.
+	// transformation de la requête en objet XML
+	var xml=rss.responseXML; 
 	
 	// récupération des données
-	var chapterText=j.txt;
-	var chapterLinks=j.links;
-	
-	// on affiche le nouveau text.
-	document.getElementById("chapterText").innerHTML=chapterText;
-	
-	var links=document.getElementById("chapterLinks");
-	
-	// on suppriemtous les liens existants.
-	while(links.firstChild)
-		links.removeChild(links.firstChild);
-	
-	// on créé les nouveaux liens
-	for(var i=0;i<chapterLinks.length;i++) {
-		var li=document.createElement("li");
-		li.className="link";
-		var a=document.createElement("a");
-		a.href=chapterLinks[i].link;
-		li.innerHTML=chapterLinks[i].txt;
-		a.appendChild(li);
-		links.appendChild(a);
+	var channels=xml.getElementsByTagName("channel");
+	var datas;
+	// pour chaque channels:
+	for(var i=0; i<channels.length;i++) {
+		datas=new Array("title","link","description",0);
+		datas[3]=new Array();
+		var c=channels[i];
+		var elemC=c.children;
+		for(var j=0;j<elemC.length;j++) {
+			e=elemC[j];
+			if(e.tagName==datas[0]) // if no title yet
+				datas[0]=e.childNodes[0].nodeValue;
+			if(e.tagName==datas[1]) // if no ling yet
+				datas[1]=e.childNodes[0].nodeValue;
+			if(e.tagName==datas[2]) // if no descriptino yet
+				datas[2]=e.childNodes[0].nodeValue;
+			if(e.tagName=="item")
+				datas[3][datas[3].length]=getItemData(e);
+		}
+		createPodcast(datas[0],datas[1],datas[2],datas[3]); // création d'un noveau Podcast
 	}
 }
-function AJAXretrieveRequest(req) { // lorsque le status change, vérifie si on a reçu un chapitre.
+function XMLretrieveRequest(req) { // lorsque le status change, vérifie si on a reçu un XML.
 	if (req.readyState === 4) {
 		if(req.status === 200) { // répose valide.
 			console.log("AJAX valid answer.");
-			changeChapter(req.responseText); // changement de chapitre avec les nouvelels données.
+			getChannelData(req); // chargement d'un nouveau podcast.
 		} else console.log("AJAX invalid answer: "+req.status); // réponse invalide.
 	}
 }
 function AJAXsendRequest(xhr,target) { // envoit la requête AJAX
-	// prépapre la récupératino du chapitre dont le numéros est "target"
-	xhr.open("GET", "http://crossorigin.me/http://iutdoua-webetu.univ-lyon1.fr/~p1402828/S4-CWR/TP2/AJAX/chapitre"+target+".json");
+	// prépapre la récupératino du XML à l'adresse "target"
+	xhr.open("GET",target);
 	
-	// envoyer requête
+	// envoit requête
 	xhr.send();
 	console.log("AJAX request sent.");
 }
-function loadChapter() { // met en palce la récupération d'un chapitre
+function loadPodcast() { // met en place la récupération d'un podcast
 	// création objet XMLHttpRequest
 	var xhr = getXMLHttpRequest();
 	
 	// vérification validité
 	if(xhr == null) {
-		console.log("Unable to create WMLHttpRequest object.");
+		console.log("Unable to create XMLHttpRequest object.");
 		return false;
 	}
 	
 	// préparation de la réception
 	xhr.onreadystatechange = function() {
-		AJAXretrieveRequest(xhr);
+		XMLretrieveRequest(xhr);
 	};
 	
 	// préparation de l'envoi
@@ -90,6 +102,3 @@ function loadChapter() { // met en palce la récupération d'un chapitre
 	
 	return true;
 }
-
-// lorsque le chargement de la page est terminé, on initialise.
-window.addEventListener("load",init);
