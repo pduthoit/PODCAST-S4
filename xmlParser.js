@@ -20,6 +20,9 @@ function getXMLHttpRequest() { // renvoit un objet XMLHttpRequest valide
 	}
 	return xhr;
 }
+/**
+ * Create an Array with all the data of one Item.
+ */
 function createItemData(item) {
 	var out=new Array("title","link","description");
 	var elem=item.children;
@@ -34,6 +37,10 @@ function createItemData(item) {
 	}
 	return out;
 }
+/**
+ * Create an Array with all the data of one Channel.
+ * Use it to create a new podcast.
+ */
 function getChannelData(rss) { // Lorsque qu'un podcast est récupéré, on l'affiche.
 	// transformation de la requête en objet XML
 	var xml=rss.responseXML; 
