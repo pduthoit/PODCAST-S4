@@ -7,22 +7,15 @@ var podcastList=new Array();
  * Init function.
  */
 function init() {
-	document.getElementById("createButton").addEventListener("click",createAlarm);
-
-	for(var index = 0; index < soundList.length; index++) {
-		var s=soundList[index];
-	}
-
-
 	console.log("onload -> init() successful");
 }
 /**
  * Sceondary functions.
  */
-function createPodcast(datas) {
+function createPodcast(data) {
 
 	var ID=podcastList.length;
-	var holder=document.getElementById("alarmHolder");
+	var holder=document.getElementById("podcasts_container");
 	var newPodcast = {
 		id:ID,
 		pcTitle:data[0],
@@ -56,8 +49,14 @@ function createPodcast(datas) {
 	}
 
 	newPodcast.podcastMini.className="podcast";
-	newPodcast.podcastMini.style.backgroundImage=newPodcast.pcImage;
+	console.log("class: "+newPodcast.podcastMini.className);
+	
+	newPodcast.podcastMini.style.backgroundImage="url("+newPodcast.pcImage+")";
+	console.log("image: "+newPodcast.podcastMini.style.backgroundImage);
+	
 	newPodcast.miniTitle.className="podcast_mini_title";
+	newPodcast.miniTitle.innerHTML=newPodcast.pcTitle;
+	console.log("title: "+newPodcast.miniTitle.className);
 	/*
 	newPodcast.podcastMini.addEventListener("click",function(){stopAlarm(newPodcast)});;
 	newPodcast.li.appendChild(newPodcast.CBactive);
@@ -116,12 +115,12 @@ function createPodcast(datas) {
 	newPodcast.Audio.src=newPodcast.SelectSound.options[newPodcast.SelectSound.selectedIndex];
 	newPodcast.Audio.load();
 	newPodcast.li.appendChild(newPodcast.Audio);
-
+	*/
 	podcastList[ID] = newPodcast;
+	newPodcast.podcastMini.appendChild(newPodcast.miniTitle);
+	holder.appendChild(newPodcast.podcastMini);
 
-	holder.appendChild(newPodcast.li);
-
-	console.log("onclick -> createAlarm() successful");*/
+	console.log("onclick -> createAlarm() successful");
 }
 
 function deleteAlarm(alarm) {

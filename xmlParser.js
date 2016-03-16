@@ -59,6 +59,9 @@ function getChannelData(rss) { // Retrieve data from a xml file.
 	// convert to XML object.
 	var xml=rss.responseXML; 
 	
+	if(xml==undefined)
+		console.log("Problem with XML");
+	
 	// preparing data holder
 	var channels=xml.getElementsByTagName("channel");
 	var datas;
@@ -91,7 +94,7 @@ function XMLretrieveRequest(req) { // when status change, load new podacst
 	if (req.readyState === 4) {
 		if(req.status === 200) { // valid answer.
 			console.log("AJAX valid answer.");
-			getChannelData(req); // loading new podcast
+			retrievePodcastData(req); // loading new podcast
 		} else console.log("AJAX invalid answer: "+req.status); // invalid answer
 	}
 }
