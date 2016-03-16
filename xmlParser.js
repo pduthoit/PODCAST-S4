@@ -21,7 +21,7 @@ function getXMLHttpRequest() { // return a valid XMLHttpRequest
  * Create an Array with all the data of one Item.
  */
 function getItemData(item) {
-	var out=new Array("title","link","description","enclosure");
+	var out=new Array("title","description","enclosure");
 	var elem=item.children;
 	for(var j=0;j<elem.length;j++) {
 		var e=elem[j];
@@ -33,12 +33,8 @@ function getItemData(item) {
 			out[1]=e.childNodes[0].nodeValue;
 			//console.log("Item Child: "+e+" ("+e.tagName+") "+e.childNodes[0].nodeValue);
 		}
-		if(e.tagName==out[2]) { // if no description yet
-			out[2]=e.childNodes[0].nodeValue;
-			//console.log("Item Child: "+e+" ("+e.tagName+") "+e.childNodes[0].nodeValue);
-		}
-		if(e.tagName==out[3]) { // if no enclosure yet
-			out[3]=[e.getAttribute("url"),e.getAttribute("type")];
+		if(e.tagName==out[2]) { // if no enclosure yet
+			out[2]=[e.getAttribute("url"),e.getAttribute("type")];
 			//console.log("Item Child: "+e+" ("+e.tagName+") "+out[3]);
 		}
 	}
