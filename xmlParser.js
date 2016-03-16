@@ -1,9 +1,8 @@
 function init() {
-	loadChapter(); // charge un premier chapitre
-	window.addEventListener("hashchange",loadChapter); // charge un chapitre à chaque fois que l'url change
+	
 }
 
-function getXMLHttpRequest() { // renvoit un objet XMLHttpRequest valide
+function getXMLHttpRequest() { // return a valid XMLHttpRequest
 	var xhr = null;
 	if (window.XMLHttpRequest || window.ActiveXObject) {
 		if (window.ActiveXObject) {
@@ -16,80 +15,92 @@ function getXMLHttpRequest() { // renvoit un objet XMLHttpRequest valide
 			xhr = new XMLHttpRequest(); 
 		}
 	} else {
-		alert("Votre navigateur ne supporte pas l'objet XMLHTTPRequest...");
+		alert("Your browser does not support XMLHTTPRequest object...");
 		return null;
 	}
 	return xhr;
 }
-function changeChapter(cptr) { // Lorsque qu'un chapitre est récupéré depuis le serveur, l'affiche.
-	// transformation de la requête en objet
-	var j=JSON.parse(cptr); 
+/**
+ * Create an Array with all the data of one Item.
+ */
+function createItemData(item) {
+	var out=new Array("title","link","description");
+	var elem=item.children;
+	for(var j=0;j<elemC.length;j++) {
+		e=elemC[j];
+		if(e.tagName==out[0]) // if no title yet
+			out[0]=e.childNodes[0].nodeValue;
+		if(e.tagName==out[1]) // if no link yet
+			out[1]=e.childNodes[0].nodeValue;
+		if(e.tagName==out[2]) // if no description yet
+			out[2]=e.childNodes[0].nodeValue;
+	}
+	return out;
+}
+/**
+ * Create an Array with all the data of one Channel.
+ * Use it to create a new podcast.
+ */
+function getChannelData(rss) { // Retrieve data from a xml file.
+	// convert to XML object.
+	var xml=rss.responseXML; 
 	
-	// récupération des données
-	var chapterText=j.txt;
-	var chapterLinks=j.links;
-	
-	// on affiche le nouveau text.
-	document.getElementById("chapterText").innerHTML=chapterText;
-	
-	var links=document.getElementById("chapterLinks");
-	
-	// on suppriemtous les liens existants.
-	while(links.firstChild)
-		links.removeChild(links.firstChild);
-	
-	// on créé les nouveaux liens
-	for(var i=0;i<chapterLinks.length;i++) {
-		var li=document.createElement("li");
-		li.className="link";
-		var a=document.createElement("a");
-		a.href=chapterLinks[i].link;
-		li.innerHTML=chapterLinks[i].txt;
-		a.appendChild(li);
-		links.appendChild(a);
+	// preparing data holder
+	var channels=xml.getElementsByTagName("channel");
+	var datas;
+	// for each channels
+	for(var i=0; i<channels.length;i++) {
+		datas=new Array("title","link","description",0);
+		datas[3]=new Array();
+		var c=channels[i];
+		var elemC=c.children;
+		for(var j=0;j<elemC.length;j++) {
+			e=elemC[j];
+			if(e.tagName==datas[0]) // if no title yet
+				datas[0]=e.childNodes[0].nodeValue;
+			if(e.tagName==datas[1]) // if no link yet
+				datas[1]=e.childNodes[0].nodeValue;
+			if(e.tagName==datas[2]) // if no descriptino yet
+				datas[2]=e.childNodes[0].nodeValue;
+			if(e.tagName=="item")
+				datas[3][datas[3].length]=getItemData(e);
+		}
+		createPodcast(datas[0],datas[1],datas[2],datas[3]); // create new podcast
 	}
 }
-function AJAXretrieveRequest(req) { // lorsque le status change, vérifie si on a reçu un chapitre.
+function XMLretrieveRequest(req) { // when status change, load new podacst
 	if (req.readyState === 4) {
-		if(req.status === 200) { // répose valide.
+		if(req.status === 200) { // valid answer.
 			console.log("AJAX valid answer.");
-			changeChapter(req.responseText); // changement de chapitre avec les nouvelels données.
-		} else console.log("AJAX invalid answer: "+req.status); // réponse invalide.
+			getChannelData(req); // loading new podcast
+		} else console.log("AJAX invalid answer: "+req.status); // invalid answer
 	}
 }
-function AJAXsendRequest(xhr,target) { // envoit la requête AJAX
-	// prépapre la récupératino du chapitre dont le numéros est "target"
-	xhr.open("GET", "http://crossorigin.me/http://iutdoua-webetu.univ-lyon1.fr/~p1402828/S4-CWR/TP2/AJAX/chapitre"+target+".json");
+function AJAXsendRequest(xhr,target) { // send AJAX request
+	// preparing cross domain request for the targeted url.
+	xhr.open("GET","http://crossorigin.me/"+target);
 	
-	// envoyer requête
+	// send request
 	xhr.send();
 	console.log("AJAX request sent.");
 }
-function loadChapter() { // met en palce la récupération d'un chapitre
-	// création objet XMLHttpRequest
+function loadPodcast(target) { // preapre podcast request
+	// create XMLHttpRequest object
 	var xhr = getXMLHttpRequest();
 	
-	// vérification validité
+	// check for validity
 	if(xhr == null) {
-		console.log("Unable to create WMLHttpRequest object.");
+		console.log("Unable to create XMLHttpRequest object.");
 		return false;
 	}
 	
-	// préparation de la réception
+	// prepare for answer
 	xhr.onreadystatechange = function() {
-		AJAXretrieveRequest(xhr);
+		XMLretrieveRequest(xhr);
 	};
 	
-	// préparation de l'envoi
-	var target = window.location.hash.substring(1);
-	if(target=="")
-		target="1";
-	
-	// envoi
+	// sending
 	AJAXsendRequest(xhr,target);
 	
 	return true;
 }
-
-// lorsque le chargement de la page est terminé, on initialise.
-window.addEventListener("load",init);
