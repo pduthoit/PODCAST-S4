@@ -8,7 +8,7 @@ var podcastList=new Array();
  */
 function init() {
 	document.getElementById("createButton").addEventListener("click",createAlarm);
-	
+
 	for(var index = 0; index < soundList.length; index++) {
 		var s=soundList[index];
 	}
@@ -19,34 +19,47 @@ function init() {
 /**
  * Sceondary functions.
  */
-function createPodcast() {
+function createPodcast(datas) {
+
 	var ID=podcastList.length;
 	var holder=document.getElementById("alarmHolder");
 	var newPodcast = {
 		id:ID,
-		pcTitle:
-		pcLink:
-		pcDesc:
-		pcImage:
+		pcTitle:data[0],
+		pcLink: data[1],
+		pcDesc: data[2],
+		pcImage:data[3],
+		pcItem: data[4],
 
-		li:document.createElement("li"),
-		CBactive:document.createElement("input"),
-		NumberHour:document.createElement("input"),
-		NumberMinute:document.createElement("input"),
-		TextName:document.createElement("input"),
-		SelectSound:document.createElement("select"),
-		ButtonDelete:document.createElement("input"),
-		Audio:document.createElement("audio")
+		/*
+		<div id="podcast_page_container">
+			<div id="podcast_video_container">
+				<div id="podcast_video"></div>
+				<div id="podcast_description">
+					<h2 id="podcast_title_desc">Description</h2>
+					<p id="podcast_p_desc">	Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut
+						labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco la
+						boris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor int.</p>
+				</div>
+			</div>
+		</div>
+		*/
+		/*<div class="podcast">
+			<h3 class="podcast_mini_title">This is</h3>
+		</div>*/
 
+		podcastMini:document.createElement("div"),
+		miniTitle:document.createElement("h3")
+
+		/*desc = getElementById()*/
 
 	}
-	newPodcast.li.name="alarm";
-	newPodcast.li.className="alarm";
 
-	newPodcast.CBactive.type="checkbox";
-	newPodcast.CBactive.name="active";
-	newPodcast.CBactive.className="checkbox";
-	newPodcast.CBactive.addEventListener("click",function(){stopAlarm(newPodcast)});;
+	newPodcast.podcastMini.className="podcast";
+	newPodcast.podcastMini.style.backgroundImage=newPodcast.pcImage;
+	newPodcast.miniTitle.className="podcast_mini_title";
+	/*
+	newPodcast.podcastMini.addEventListener("click",function(){stopAlarm(newPodcast)});;
 	newPodcast.li.appendChild(newPodcast.CBactive);
 
 	newPodcast.NumberHour.type="number";
@@ -104,11 +117,11 @@ function createPodcast() {
 	newPodcast.Audio.load();
 	newPodcast.li.appendChild(newPodcast.Audio);
 
-	podcastList[ID]=newPodcast;
+	podcastList[ID] = newPodcast;
 
 	holder.appendChild(newPodcast.li);
 
-	console.log("onclick -> createAlarm() successful");
+	console.log("onclick -> createAlarm() successful");*/
 }
 
 function deleteAlarm(alarm) {
