@@ -11,6 +11,7 @@
 	<script src="effects.js"></script>
 	<script language="javascript" src="rssDisplayer.js"></script>
 	<script language="javascript" src="xmlParser.js"></script>
+	<script language="javascript" src="itemDisplayer.js"></script>
 	<title>RSS</title>
 </head>
 
@@ -21,6 +22,7 @@
 			<li><a href="rss.html" id="web_title">The PodcastWebsite</a></li>
 			<li><a href="rss.html">musics</a></li>
 			<li><a href="rss.html">videos</a></li>
+			<li><input id="podcastURL" type="text" placeholder="RSS url here..."/><input type="button" onclick="loadPodcast(document.getElementById('podcastURL').value);"/></li>
 		</ul>
 	</nav>
 	<div id="page">

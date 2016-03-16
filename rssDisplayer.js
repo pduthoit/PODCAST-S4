@@ -117,9 +117,10 @@ function createPodcast(data) {
 	newPodcast.li.appendChild(newPodcast.Audio);
 	*/
 	podcastList[ID] = newPodcast;
-	newPodcast.podcastMini.appendChild(newPodcast.miniTitle);
-	holder.appendChild(newPodcast.podcastMini);
-
+	createItemList(newPodcast);
+	//newPodcast.podcastMini.appendChild(newPodcast.miniTitle);
+	//holder.appendChild(newPodcast.podcastMini);
+	
 	console.log("onclick -> createAlarm() successful");
 }
 
