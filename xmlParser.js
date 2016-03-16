@@ -1,6 +1,3 @@
-function init() {
-	
-}
 
 function getXMLHttpRequest() { // return a valid XMLHttpRequest
 	var xhr = null;
@@ -23,20 +20,37 @@ function getXMLHttpRequest() { // return a valid XMLHttpRequest
 /**
  * Create an Array with all the data of one Item.
  */
-function createItemData(item) {
-	var out=new Array("title","link","description");
+function getItemData(item) {
+	var out=new Array("title","link","description","enclosure");
 	var elem=item.children;
-	for(var j=0;j<elemC.length;j++) {
-		e=elemC[j];
-		if(e.tagName==out[0]) // if no title yet
+	for(var j=0;j<elem.length;j++) {
+		var e=elem[j];
+		if(e.tagName==out[0]) { // if no title yet
 			out[0]=e.childNodes[0].nodeValue;
-		if(e.tagName==out[1]) // if no link yet
+			//console.log("Item Child: "+e+" ("+e.tagName+") "+e.childNodes[0].nodeValue);
+		}
+		if(e.tagName==out[1]) { // if no link yet
 			out[1]=e.childNodes[0].nodeValue;
-		if(e.tagName==out[2]) // if no description yet
+			//console.log("Item Child: "+e+" ("+e.tagName+") "+e.childNodes[0].nodeValue);
+		}
+		if(e.tagName==out[2]) { // if no description yet
 			out[2]=e.childNodes[0].nodeValue;
+			//console.log("Item Child: "+e+" ("+e.tagName+") "+e.childNodes[0].nodeValue);
+		}
+		if(e.tagName==out[3]) { // if no enclosure yet
+			out[3]=[e.getAttribute("url"),e.getAttribute("type")];
+			//console.log("Item Child: "+e+" ("+e.tagName+") "+out[3]);
+		}
 	}
 	return out;
 }
+
+/**
+ * Retrieve data from XML and create new podcast.
+ */
+ function retrievePodcastData(rss) {
+	createPodcast(getChannelData(rss));
+ }
 /**
  * Create an Array with all the data of one Channel.
  * Use it to create a new podcast.
@@ -50,8 +64,8 @@ function getChannelData(rss) { // Retrieve data from a xml file.
 	var datas;
 	// for each channels
 	for(var i=0; i<channels.length;i++) {
-		datas=new Array("title","link","description",0);
-		datas[3]=new Array();
+		datas=new Array("title","link","description","image",0);
+		datas[4]=new Array();
 		var c=channels[i];
 		var elemC=c.children;
 		for(var j=0;j<elemC.length;j++) {
@@ -60,12 +74,17 @@ function getChannelData(rss) { // Retrieve data from a xml file.
 				datas[0]=e.childNodes[0].nodeValue;
 			if(e.tagName==datas[1]) // if no link yet
 				datas[1]=e.childNodes[0].nodeValue;
-			if(e.tagName==datas[2]) // if no descriptino yet
+			if(e.tagName==datas[2]) // if no description yet
 				datas[2]=e.childNodes[0].nodeValue;
+			if(e.tagName==datas[3]) { // if no image yet
+				datas[3]=e.children[0].childNodes[0].data;
+				console.log("Channel Data: "+e+" ("+e.tagName+") "+datas[3]);
+			}
 			if(e.tagName=="item")
-				datas[3][datas[3].length]=getItemData(e);
+				datas[4][datas[4].length]=getItemData(e);
 		}
-		createPodcast(datas[0],datas[1],datas[2],datas[3]); // create new podcast
+		//createPodcast(datas[0],datas[1],datas[2],datas[3]); // create new podcast
+		return datas;
 	}
 }
 function XMLretrieveRequest(req) { // when status change, load new podacst
