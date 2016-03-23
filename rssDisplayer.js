@@ -2,23 +2,33 @@
  * Globals
  */
 
-var podcastList=new Array();
-var podcast_media;
+var podcastItemList=0;
+var podcast;
+var podcast_img;
+var podcast_title;
 var podcast_desc;
 var podcast_media_container;
+
 /**
  * Init function.
  */
 function init() {
-	window.addEventListener("hashchange",hashParser);
-	podcast_media=document.getElementById("podcast_media");
-	podcast_desc=document.getElementById("podcast_description");
+	
+	podcast_img=document.getElementById("podcast_img");
+	podcast_title=document.getElementById("podcast_title_desc");
+	podcast_desc=document.getElementById("podcast_p_desc");
 	podcast_media_container=document.getElementById("podcast_media_container");
+	
+	console.log(podcast_img);
 	
 	console.log("onload -> init() successful");
 	
 	hashParser();
 }
+
+window.addEventListener("load",init);
+window.addEventListener("hashchange",hashParser);
+
 /**
  * Sceondary functions.
  */
@@ -27,165 +37,53 @@ function hashParser() {
 	if(urlHash=="")
 		 return;
 	var args = urlHash.split("#");
+	console.log(args.length+" "+podcastItemList);
 	if(args.length>0) {
 		var mediaSRC=args[0];
-		console.log("hashParser: "+mediaSRC);
-		loadMedia(mediaSRC);
+		console.log("src: "+mediaSRC);
+		if(args.length>1) {
+			var id=args[1];
+			console.log(id);
+			loadMedia(id);
+		} else loadPodcast("id: "+mediaSRC);
 	}
 }
-function loadMedia(src) {
-	podcast_media.innerHTML="<audio controls><source src=\""+src+"\" type=\"audio/mpeg\"></audio>";
-	podcast_desc.innerHTML=src;
+function loadMedia(id) {
+	console.log(podcastItemList);
+	if(podcastItemList.length>=id) {
+		var pod=podcastItemList[id];
+		podcast_media_container.innerHTML="<audio controls><source src=\""+pod[2]+"\" type=\"audio/mpeg\"></audio>";
+		podcast_desc.innerHTML="<h3>"+pod[0]+"</h3>"+pod[1];
+	} console.log("Can't load media: no podcast loaded yet.");
 }
 function createPodcast(data) {
-
-	var ID=podcastList.length;
 	var holder=document.getElementById("podcasts_container");
 	var newPodcast = {
-		id:ID,
+		pcSRC:document.getElementById('podcastURL').value,
 		pcTitle:data[0],
 		pcLink: data[1],
 		pcDesc: data[2],
 		pcImage:data[3],
 		pcItem: data[4],
-
-		/*
-		<div id="podcast_page_container">
-			<div id="podcast_video_container">
-				<div id="podcast_video"></div>
-				<div id="podcast_description">
-					<h2 id="podcast_title_desc">Description</h2>
-					<p id="podcast_p_desc">	Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut
-						labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco la
-						boris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor int.</p>
-				</div>
-			</div>
-		</div>
-		*/
-		/*<div class="podcast">
-			<h3 class="podcast_mini_title">This is</h3>
-		</div>*/
-
-		podcastMini:document.createElement("div"),
-		miniTitle:document.createElement("h3")
-
-		/*desc = getElementById()*/
-
 	}
-
-	newPodcast.podcastMini.className="podcast";
-	console.log("class: "+newPodcast.podcastMini.className);
 	
-	newPodcast.podcastMini.style.backgroundImage="url("+newPodcast.pcImage+")";
-	console.log("image: "+newPodcast.podcastMini.style.backgroundImage);
+	podcastItemList=newPodcast.pcItem;
 	
-	newPodcast.miniTitle.className="podcast_mini_title";
-	newPodcast.miniTitle.innerHTML=newPodcast.pcTitle;
-	console.log("title: "+newPodcast.miniTitle.className);
-	/*
-	newPodcast.podcastMini.addEventListener("click",function(){stopAlarm(newPodcast)});;
-	newPodcast.li.appendChild(newPodcast.CBactive);
+	podcast_img=document.getElementById("podcast_img");
+	podcast_title=document.getElementById("podcast_title_desc");
+	podcast_desc=document.getElementById("podcast_p_desc");
+	podcast_media_container=document.getElementById("podcast_media_container");
+	
+	podcast_img.src=newPodcast.pcImage;
+	console.log("image: "+podcast_img.src);
+	
+	podcast_title.innerHTML=newPodcast.pcTitle;
+	console.log("title: "+podcast_title.innerHTML);
+	
+	podcast_desc.innerHTML=newPodcast.pcDesc;
+	console.log("desc: "+podcast_desc.innerHTML);
 
-	newPodcast.NumberHour.type="number";
-	newPodcast.NumberHour.name="hour";
-	newPodcast.NumberHour.className="number";
-	newPodcast.NumberHour.max=23;
-	newPodcast.NumberHour.min=0;
-	newPodcast.NumberHour.value=0;
-	newPodcast.li.appendChild(newPodcast.NumberHour);
-
-	newPodcast.NumberMinute.type="number";
-	newPodcast.NumberMinute.name="minute";
-	newPodcast.NumberMinute.className="number";
-	newPodcast.NumberMinute.max=59;
-	newPodcast.NumberMinute.min=0;
-	newPodcast.NumberMinute.value=0;
-	newPodcast.li.appendChild(newPodcast.NumberMinute);
-
-	newPodcast.TextName.type="text";
-	newPodcast.TextName.name="name";
-	newPodcast.TextName.className="name";
-	newPodcast.TextName.value="Nouvelle alarme "+ID;
-	newPodcast.li.appendChild(newPodcast.TextName);
-
-	newPodcast.SelectSound.name="sound";
-	for(var index = 0; index < soundList.length; index++) {
-		var s=soundList[index];
-		var selected="";
-		if(s.selected)
-			selected=" selected";
-		newPodcast.SelectSound.innerHTML+='<option value="'+s.path+'" '+selected+'>'+s.name+'</option>';
-	}
-	newPodcast.SelectSound.addEventListener("change",function() {
-		var current=newPodcast.Audio.src;
-		var selected=newPodcast.SelectSound.options[newPodcast.SelectSound.selectedIndex].value;
-		if(current!==selected) {
-			newPodcast.Audio.pause();
-			newPodcast.Audio.src=selected;
-			newPodcast.Audio.load();
-		}
-		console.log("Selected sound changed");
-	});
-	newPodcast.li.appendChild(newPodcast.SelectSound);
-
-	newPodcast.ButtonDelete.type="button";
-	newPodcast.ButtonDelete.name="delete";
-	newPodcast.ButtonDelete.className="button";
-	newPodcast.ButtonDelete.value="-";
-	newPodcast.ButtonDelete.addEventListener("click",function() {
-		deleteAlarm(newPodcast);
-	});
-	newPodcast.li.appendChild(newPodcast.ButtonDelete);
-
-	newPodcast.Audio.src=newPodcast.SelectSound.options[newPodcast.SelectSound.selectedIndex];
-	newPodcast.Audio.load();
-	newPodcast.li.appendChild(newPodcast.Audio);
-	*/
-	podcastList[ID] = newPodcast;
+	podcast = newPodcast;
 	createItemList(newPodcast);
-	//newPodcast.podcastMini.appendChild(newPodcast.miniTitle);
-	//holder.appendChild(newPodcast.podcastMini);
-	
-	console.log("onclick -> createAlarm() successful");
 }
 
-function deleteAlarm(alarm) {
-	stopAlarm(alarm);
-	var holder=document.getElementById("alarmHolder");
-	holder.removeChild(alarm.li);
-}
-/**
- * Start the sound for the current alarm if not playing.
- * Change the url if alarm choice changed.
- * Change style.
- */
-function startAlarm(alarm) {
-	if(alarm.Audio.paused===true) {
-		alarm.Audio.play();
-		alarm.li.className="alarmActive";
-		console.log("startAlarm() successful");
-		console.log(alarm.Audio.src);
-		console.log("Play -> is paused: "+alarm.Audio.paused);
-	}
-}
-/**
- * Stop sound.
- * Change style.
- */
-function stopAlarm(alarm) {
-	if(alarm.Audio) {
-		alarm.Audio.pause();
-	}
-	alarm.li.className="alarm";
-}
-/**
- * Other functions
- */
- function toStr(numeric) {
-	 if(numeric<10)
-		 return "0"+numeric;
-	 else
-		return ""+numeric;
- }
-
-window.addEventListener("load", init);

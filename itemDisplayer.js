@@ -1,41 +1,38 @@
-/**
- * Globals
- */
 
-/**
- * Secondary functions.
- */
+
 function createItemList(newPodcast) {
 	var itemDIV=document.getElementById("podcasts_container");
 	//itemUL.className="itemList";
 	for(var i=0;i<newPodcast.pcItem.length;i++) {
 		var item=newPodcast.pcItem[i];
-		var itemLI=document.createElement("div");
+		var itemA=document.createElement("a");
+		var itemLI=document.createElement("li");
+		var itemTitle=item[0];
+		var itemDesc=item[1];
+		var itemMediaLink=item[2];
+		var itemMediaType=item[3];
+		var mediaType=getType(newPodcast);
+		//var mediaType="audio";
+		var itemId=i;
+		
+		itemLI.title=itemDesc;
 		itemLI.className="podcast";
-		itemLI.style.backgroundImage="url("+newPodcast.pcImage+")";
-		itemLI.innerHTML="<a href='#"+item[2]+"'>"+item[0]+" ("+item[3]+")</a>";
-		itemDIV.appendChild(itemLI);
+		itemLI.innerHTML=itemTitle;
+		//itemLI.innerHTML="<"+mediaType+" controls><source src=\""+itemMediaLink+"\" type=\""+itemMediaType+"\"></"+mediaType+">";
+		
+		itemA.href="#"+podcast.pcSRC+"#"+itemId;
+		itemA.appendChild(itemLI);
+		itemDIV.appendChild(itemA);
 	}
 }
 
 function getType(newPodcast) {
-	var audio=false;
-	var video=false;
 	for(var i=0;i<newPodcast.pcItem.length;i++) {
 		var item=newPodcast.pcItem[i];
-		if(item[2][1].includes("audio"))
-			audio=true;
-		if(item[2][1].includes("video"))
-			video=true;
+		if(item[3].includes("audio"))
+			return "audio";
+		if(item[3].includes("video"))
+			return "video";
 	}
-	var out="none";
-	if(audio)
-		out="audio";
-	if(video) {
-		if(audio)
-			out+=" and video";
-		else
-			out="video";
-	}
-	return out;
+	return "none";
 }
