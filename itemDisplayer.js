@@ -12,7 +12,8 @@ function createItemList(newPodcast) {
 		var item=newPodcast.pcItem[i];
 		var itemLI=document.createElement("div");
 		itemLI.className="podcast";
-		itemLI.innerHTML="<a href='#"+item[2][0]+"'>"+item[0]+" ("+item[2][1]+")</a>";
+		itemLI.style.backgroundImage="url("+newPodcast.pcImage+")";
+		itemLI.innerHTML="<a href='#"+item[2]+"'>"+item[0]+" ("+item[3]+")</a>";
 		itemDIV.appendChild(itemLI);
 	}
 }

@@ -3,15 +3,40 @@
  */
 
 var podcastList=new Array();
+var podcast_media;
+var podcast_desc;
+var podcast_media_container;
 /**
  * Init function.
  */
 function init() {
+	window.addEventListener("hashchange",hashParser);
+	podcast_media=document.getElementById("podcast_media");
+	podcast_desc=document.getElementById("podcast_description");
+	podcast_media_container=document.getElementById("podcast_media_container");
+	
 	console.log("onload -> init() successful");
+	
+	hashParser();
 }
 /**
  * Sceondary functions.
  */
+function hashParser() {
+	var urlHash = window.location.hash.substring(1);
+	if(urlHash=="")
+		 return;
+	var args = urlHash.split("#");
+	if(args.length>0) {
+		var mediaSRC=args[0];
+		console.log("hashParser: "+mediaSRC);
+		loadMedia(mediaSRC);
+	}
+}
+function loadMedia(src) {
+	podcast_media.innerHTML="<audio controls><source src=\""+src+"\" type=\"audio/mpeg\"></audio>";
+	podcast_desc.innerHTML=src;
+}
 function createPodcast(data) {
 
 	var ID=podcastList.length;
